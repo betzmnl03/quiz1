@@ -15,9 +15,11 @@ app.use(cookieParser());
 app.use(logger('dev'));
 
 
-const cluckRouter = require('./routes/cluck')
-app.use('/',cluckRouter);
+const userRouter = require('./routes/user')
+app.use('/user',userRouter);
 
+const cluckRouter = require('./routes/cluck')
+app.use('/cluck',cluckRouter);
 
 const ADDRESS = 'localhost';
 const PORT = 8000;
