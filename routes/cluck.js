@@ -23,7 +23,13 @@ router.post('/form',(req,res)=>{
 })
 
 router.get('/',(req,res)=>{
-    res.send("clucks page")
+    let username=req.cookies.username;
+    knex('clucks')
+    .orderBy('created_at','desc')
+    .then((records)=>{
+        res.render('cluck',{records:records,username:username})
+    })
+   
 })
 
 module.exports = router;
