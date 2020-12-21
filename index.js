@@ -19,7 +19,7 @@ const userRouter = require('./routes/user')
 app.use('/user',userRouter);
 
 const cluckRouter = require('./routes/cluck')
-app.use('/cluck',cluckRouter);
+app.use('/',cluckRouter);
 
 const ADDRESS = 'localhost';
 const PORT = 8000;

@@ -10,7 +10,20 @@ router.get('/form',(req,res)=>{
 
 router.post('/form',(req,res)=>{
     let username=req.cookies.username;
-    res.render('form',{username:username})
+    knex('clucks')
+    .insert({
+        username:username,
+        content:req.body.content,
+        image_url:req.body.image_url
+    })
+    .returning('*')
+    .then((record)=>{
+        res.redirect('/')
+    })
+})
+
+router.get('/',(req,res)=>{
+    res.send("clucks page")
 })
 
 module.exports = router;
