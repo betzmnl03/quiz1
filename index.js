@@ -16,7 +16,7 @@ app.use(logger('dev'));
 
 
 const cluckRouter = require('./routes/cluck')
-app.use('/cluck',cluckRouter);
+app.use('/',cluckRouter);
 
 
 const ADDRESS = 'localhost';
