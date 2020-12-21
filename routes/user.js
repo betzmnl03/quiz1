@@ -35,7 +35,7 @@ router.post('/signin',(req,res)=>{
     const COOKIE_EXPIRE = 1000 * 60 * 60 * 24 * 7;
     const username = req.body.username; 
     res.cookie('username', username, { maxAge: COOKIE_EXPIRE });
-    res.redirect('/user/signin')
+    res.redirect('/form')
 })
 
 router.get('/form',(req,res)=>{
