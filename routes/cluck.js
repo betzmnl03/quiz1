@@ -1,4 +1,5 @@
 const express = require('express');
+const { indexOf } = require('lodash');
 const knex = require('../db/client');
 const router = express.Router();
 
@@ -8,8 +9,48 @@ router.get('/form',(req,res)=>{
     res.render('form',{username:username})
 })
 
+
 router.post('/form',(req,res)=>{
     let username=req.cookies.username;
+    let trendArr=[]
+    let rec=[]
+    let final=[];
+    if(req.body.content.includes("#")){
+        let contentArr=req.body.content.split(" ")
+        for(let x of contentArr){
+            if(x.includes("#")){
+                trendArr.push(x)
+            }
+        }
+        for(let x of trendArr){
+            knex('trending')
+    .select('*')
+    .where('trend','like', x)
+    .then((record)=>{
+        if(record.length===0){
+            console.log("inside")
+            knex('trending')
+            .insert({
+                trend:`${x}`,
+                count:"1"
+            })
+            .returning("*")
+            .then(()=>{
+                return "inserted new trend"
+            })
+        }
+        else{
+            let count=record[0].count+1;
+            knex('trending')
+            .where('trend','ilike',x)
+            .update({
+                count:count
+            })
+        }
+        console.log(record)
+        })
+        }
+    }
     knex('clucks')
     .insert({
         username:username,
@@ -22,6 +63,7 @@ router.post('/form',(req,res)=>{
     })
 })
 
+let final=[]
 router.get('/',(req,res)=>{
     let username=req.cookies.username;
     knex('clucks')
@@ -31,8 +73,25 @@ router.get('/',(req,res)=>{
         for(let x of records){
             time.push(timeFunc(x.created_at))
         }
-        
-        res.render('cluck',{records:records,username:username,time:time})
+        knex('trending')
+        .select('*')
+        .orderBy('count','desc')
+        .returning('*')
+        .then((record)=>{
+            final.push(record)
+            console.log(final)
+        })
+        .then(()=>{
+            if(final.length>0){
+                console.log(records)
+                res.render('cluck',{records:records,username:username,time:time,final:final})
+            }
+            else{
+                res.render('cluck',{records:records,username:username,time:time,final:false})
+            }
+            
+        })
+
     })
 })
 
@@ -51,26 +110,20 @@ router.get('/clucks',(req,res)=>{
 })
 
 const timeFunc=(ptime)=>{
-    console.log("ptime",ptime)
-    let current = new Date();
-    var difference = current.getTime() - ptime.getTime();
 
-    var daysDifference = Math.floor(difference/1000/60/60/24);
+    let current = new Date();
+    let difference = current.getTime() - ptime.getTime();
+
+    let daysDifference = Math.floor(difference/1000/60/60/24);
     difference -= daysDifference*1000*60*60*24
 
-    var hoursDifference = Math.floor(difference/1000/60/60);
+    let hoursDifference = Math.floor(difference/1000/60/60);
     difference -= hoursDifference*1000*60*60
 
-    var minutesDifference = Math.floor(difference/1000/60);
+    let minutesDifference = Math.floor(difference/1000/60);
     difference -= minutesDifference*1000*60
 
-    var secondsDifference = Math.floor(difference/1000);
-
-    console.log('difference = ' + 
-      daysDifference + ' day/s ' + 
-      hoursDifference + ' hour/s ' + 
-      minutesDifference + ' minute/s ' + 
-      secondsDifference + ' second/s ');
+    let secondsDifference = Math.floor(difference/1000);
 
       if(daysDifference===0&&hoursDifference===0&&minutesDifference<=1){
           return "just now"
@@ -79,12 +132,18 @@ const timeFunc=(ptime)=>{
           return `${minutesDifference} minutes ago`
       }
       else if(daysDifference===0&&hoursDifference>0){
-        return `${hoursDifference} hours ago`
+        return hoursDifference===1?'1 hour ago':`${hoursDifference} hours ago`
     }
     else{
-        return `${daysDifference} days ago`
+        return DaysDifference===1?'1 day ago':`${daysDifference} days ago`
     }
 
+}
+
+
+const trendFuncexist=(word)=>{
+    
+    // return final[0]
 }
 
 module.exports = router;
