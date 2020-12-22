@@ -35,16 +35,11 @@ router.post('/form',(req,res)=>{
             })
             .returning("*")
             .then(()=>{
-                console.log("here")
                 return "inserted new trend"
             })
         }
         else{
             let count=record[0].count+1;
-            console.log(record[0].count)
-            console.log(count)
-            console.log(record)
-            console.log(x)
             knex('trending')
             .where('trend','ilike',x)
             .update({
@@ -52,10 +47,9 @@ router.post('/form',(req,res)=>{
             })
             .returning('*')
             .then((record)=>{
-                console.log(record)
+               console.log(record)
             })
         }
-        // console.log(typeof record.count)
         })
         }
     }
@@ -91,7 +85,7 @@ router.get('/',(req,res)=>{
         })
         .then(()=>{
             if(final.length>0){
-                console.log(final)
+                
                 res.render('cluck',{records:records,username:username,time:time,final:final})
             }
             else{
@@ -122,7 +116,7 @@ router.get('/clucks',(req,res)=>{
         })
         .then(()=>{
             if(final.length>0){
-                console.log(final)
+                
                 res.render('cluck',{records:records,username:username,time:time,final:final})
             }
             else{
@@ -166,10 +160,5 @@ const timeFunc=(ptime)=>{
 
 }
 
-
-const trendFuncexist=(word)=>{
-    
-    // return final[0]
-}
 
 module.exports = router;
