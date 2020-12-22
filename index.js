@@ -22,7 +22,7 @@ const cluckRouter = require('./routes/cluck')
 app.use('/',cluckRouter);
 
 const ADDRESS = 'localhost';
-const PORT = 8080;
+const PORT = 7001;
 app.listen(PORT, ADDRESS, () => {
   console.log(`Server listening on ${ADDRESS}:${PORT}`);
 });
