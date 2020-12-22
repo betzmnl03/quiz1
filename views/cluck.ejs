@@ -6,7 +6,7 @@
     <%if(i==0){%>
             <div class="d-none d-md-block  col-4 mr-2 border rounded">
                 <h3>Trending Clucks</h3>
-                <%if(final){%>
+                <%if(final.length>0){%>
                     <%for(let x of final[0]){%>
                         <p><%=x.trend%> &nbsp;•<%=x.count%></p>
                         <%}%>
@@ -44,6 +44,6 @@
 
   <%}%>
 <%if(records.length===0){%>
-    <h1>Please add new clucks to start</h1>
+    <h4 class="text-center">Please add new clucks to start</h4>
  <%}%>
 <%- include("./partials/footer")%>

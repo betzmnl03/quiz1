@@ -28,26 +28,34 @@ router.post('/form',(req,res)=>{
     .where('trend','like', x)
     .then((record)=>{
         if(record.length===0){
-            console.log("inside")
             knex('trending')
             .insert({
                 trend:`${x}`,
-                count:"1"
+                count:1
             })
             .returning("*")
             .then(()=>{
+                console.log("here")
                 return "inserted new trend"
             })
         }
         else{
             let count=record[0].count+1;
+            console.log(record[0].count)
+            console.log(count)
+            console.log(record)
+            console.log(x)
             knex('trending')
             .where('trend','ilike',x)
             .update({
                 count:count
             })
+            .returning('*')
+            .then((record)=>{
+                console.log(record)
+            })
         }
-        console.log(record)
+        // console.log(typeof record.count)
         })
         }
     }
@@ -63,8 +71,9 @@ router.post('/form',(req,res)=>{
     })
 })
 
-let final=[]
+
 router.get('/',(req,res)=>{
+    let final=[]
     let username=req.cookies.username;
     knex('clucks')
     .orderBy('created_at','desc')
@@ -79,11 +88,10 @@ router.get('/',(req,res)=>{
         .returning('*')
         .then((record)=>{
             final.push(record)
-            console.log(final)
         })
         .then(()=>{
             if(final.length>0){
-                console.log(records)
+                console.log(final)
                 res.render('cluck',{records:records,username:username,time:time,final:final})
             }
             else{
@@ -97,17 +105,35 @@ router.get('/',(req,res)=>{
 
 router.get('/clucks',(req,res)=>{
     let username=req.cookies.username;
+    let final=[]
     knex('clucks')
     .orderBy('created_at','desc')
     .then((records)=>{
-        let time;
+        let time=[];
         for(let x of records){
-        time=timeFunc(x.created_at)
-    }
-    
-    res.render('cluck',{records:records,username:username,time:time})
+            time.push(timeFunc(x.created_at))
+        }
+        knex('trending')
+        .select('*')
+        .orderBy('count','desc')
+        .returning('*')
+        .then((record)=>{
+            final.push(record)
+        })
+        .then(()=>{
+            if(final.length>0){
+                console.log(final)
+                res.render('cluck',{records:records,username:username,time:time,final:final})
+            }
+            else{
+                res.render('cluck',{records:records,username:username,time:time,final:false})
+            }
+            
+        })
+
     })
 })
+
 
 const timeFunc=(ptime)=>{
 
